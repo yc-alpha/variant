@@ -11,7 +11,10 @@ func TestVariant_ToUint(t *testing.T) {
 	targets := []Pair[uint]{
 		{true, 1},
 		{false, 0},
-		{"Hello World!你好！", 0},
+		{"192hello.你好！", 0},
+		{".234", 0},
+		{"234.", 0},
+		{"127.0.0.1", 0},
 		{math.MaxInt8, 127},
 		{math.MinInt8, 0},
 		{math.MaxInt16, 32767},
@@ -25,11 +28,13 @@ func TestVariant_ToUint(t *testing.T) {
 		{math.MaxUint32, 4294967295},
 		{float32(12345.123), 12345},
 		{float32(-12345.123), 0},
+		{12345.123, 12345},
+		{-12345.123, 0},
 		{123456789.12345678, 123456789},
 		{tt, uint(tt.UnixNano())},
 	}
 	for _, pair := range targets {
-		t.Run("ToInt", func(t *testing.T) {
+		t.Run("ToUint", func(t *testing.T) {
 			v := New(pair.Key)
 			assert(v.ToUint() == pair.Val)
 		})

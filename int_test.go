@@ -11,7 +11,10 @@ func TestVariant_ToInt(t *testing.T) {
 	targets := []Pair[int]{
 		{true, 1},
 		{false, 0},
-		{"Hello World!你好！", 0},
+		{"192hello.你好！", 0},
+		{".234", 0},
+		{"234.", 0},
+		{"127.0.0.1", 0},
 		{math.MaxInt8, 127},
 		{math.MinInt8, -128},
 		{math.MaxInt16, 32767},
@@ -24,6 +27,7 @@ func TestVariant_ToInt(t *testing.T) {
 		{math.MaxUint16, 65535},
 		{math.MaxUint32, 4294967295},
 		{float32(12345.123), 12345},
+		{float32(-12345.123), -12345},
 		{123456789.12345678, 123456789},
 		{tt, int(tt.UnixNano())},
 	}

@@ -30,7 +30,7 @@ func TestVariant_ToFloat64(t *testing.T) {
 		{tt, float64(tt.UnixNano())},
 	}
 	for _, pair := range targets {
-		t.Run("ToInt", func(t *testing.T) {
+		t.Run("ToFloat64", func(t *testing.T) {
 			v := New(pair.Key)
 			assert(v.ToFloat64() == pair.Val)
 		})

@@ -13,12 +13,24 @@ type uintConverter struct {
 }
 
 func (u uintConverter) FromString(v Variant) uint {
+	tail := []byte{}
 	for index, ch := range v.Data {
 		if ch == '.' {
+			tail = v.Data[index+1:]
+			if len(tail) == 0 {
+				return 0
+			}
 			v.Data = v.Data[:index]
 			break
 		}
 	}
+	// check if tail is not a number
+	for _, ch := range tail {
+		if ch < '0' || ch > '9' {
+			return 0
+		}
+	}
+
 	start := 0
 	sLen := len(v.Data)
 	if sLen == 0 || v.Data[0] == '-' {
@@ -158,6 +170,9 @@ func (u uintConverter) FromFloat32(v Variant) uint {
 	if len(v.Data) == 4 {
 		f = math.Float32frombits(binary.BigEndian.Uint32(v.Data))
 	}
+	if f < 0 || f > float32(maxUint) {
+		return 0
+	}
 	return uint(f)
 }
 
@@ -165,6 +180,9 @@ func (u uintConverter) FromFloat64(v Variant) uint {
 	var f float64
 	if len(v.Data) == 8 {
 		f = math.Float64frombits(binary.BigEndian.Uint64(v.Data))
+	}
+	if f < 0 || f > float64(maxUint) {
+		return 0
 	}
 	return uint(f)
 }

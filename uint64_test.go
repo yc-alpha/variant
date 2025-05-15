@@ -11,7 +11,10 @@ func TestVariant_ToUint64(t *testing.T) {
 	targets := []Pair[uint64]{
 		{true, 1},
 		{false, 0},
-		{"Hello World!你好！", 0},
+		{"192hello.你好！", 0},
+		{".234", 0},
+		{"234.", 0},
+		{"127.0.0.1", 0},
 		{math.MaxInt8, 127},
 		{math.MinInt8, 0},
 		{math.MaxInt16, 32767},
@@ -29,7 +32,7 @@ func TestVariant_ToUint64(t *testing.T) {
 		{tt, uint64(tt.UnixNano())},
 	}
 	for _, pair := range targets {
-		t.Run("ToInt", func(t *testing.T) {
+		t.Run("ToUint64", func(t *testing.T) {
 			v := New(pair.Key)
 			assert(v.ToUint64() == pair.Val)
 		})

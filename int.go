@@ -14,10 +14,21 @@ type intConverter struct {
 
 func (c intConverter) FromString(v Variant) int {
 
+	tail := []byte{}
 	for index, ch := range v.Data {
 		if ch == '.' {
+			tail = v.Data[index+1:]
+			if len(tail) == 0 {
+				return 0
+			}
 			v.Data = v.Data[:index]
 			break
+		}
+	}
+	// check if tail is not a number
+	for _, ch := range tail {
+		if ch < '0' || ch > '9' {
+			return 0
 		}
 	}
 

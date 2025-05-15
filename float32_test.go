@@ -30,7 +30,7 @@ func TestVariant_ToFloat32(t *testing.T) {
 		{tt, float32(tt.UnixNano())},
 	}
 	for _, pair := range targets {
-		t.Run("ToInt", func(t *testing.T) {
+		t.Run("ToFloat32", func(t *testing.T) {
 			v := New(pair.Key)
 			assert(v.ToFloat32() == pair.Val)
 		})
