@@ -21,7 +21,7 @@ type Variant struct {
 	layout string
 }
 
-var Nil = Variant{Type: Invalid, Data: make([]byte, 0, 8)}
+var Nil = Variant{Type: Invalid}
 
 func (v *Variant) SetLayout(layout string) *Variant {
 	v.layout = layout
@@ -163,52 +163,112 @@ func (v Variant) MarshalJSON() ([]byte, error) {
 func New(v any) Variant {
 	variant := Variant{
 		Type:   Invalid,
-		Data:   make([]byte, 0, 8),
 		layout: time.DateTime,
 	}
 
 	switch v := v.(type) {
+	case *string:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *bool:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *int:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *int8:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *int16:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *int32:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *int64:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *uint:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *uint8:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *uint16:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *uint32:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *uint64:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *float32:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *float64:
+		if v != nil {
+			variant = New(*v)
+		}
+	case *time.Time:
+		if v != nil {
+			variant = New(*v)
+		}
 	case string:
 		variant.Type = String
-		variant.Data = append(variant.Data, v...)
+		variant.Data = []byte(v)
 	case bool:
 		variant.Type = Bool
 		if v {
-			variant.Data = append(variant.Data, 0x01)
+			variant.Data = []byte{0x01}
 		} else {
-			variant.Data = append(variant.Data, 0x00)
+			variant.Data = []byte{0x00}
 		}
 	case int:
 		variant.Type = Int
 		if intSize == 32 {
-			variant.Data = append(variant.Data, make([]byte, 4)...)
+			variant.Data = make([]byte, 4)
 			binary.BigEndian.PutUint32(variant.Data, uint32(v))
 		} else if intSize == 64 {
-			variant.Data = append(variant.Data, make([]byte, 8)...)
+			variant.Data = make([]byte, 8)
 			binary.BigEndian.PutUint64(variant.Data, uint64(v))
 		}
 	case int8:
 		variant.Type = Int8
 		variant.Data = append(variant.Data, byte(v))
+
 	case int16:
 		variant.Type = Int16
-		variant.Data = append(variant.Data, make([]byte, 2)...)
+		variant.Data = make([]byte, 2)
 		binary.BigEndian.PutUint16(variant.Data, uint16(v))
 	case int32:
 		variant.Type = Int32
-		variant.Data = append(variant.Data, make([]byte, 4)...)
+		variant.Data = make([]byte, 4)
 		binary.BigEndian.PutUint32(variant.Data, uint32(v))
 	case int64:
 		variant.Type = Int64
-		variant.Data = append(variant.Data, make([]byte, 8)...)
+		variant.Data = make([]byte, 8)
 		binary.BigEndian.PutUint64(variant.Data, uint64(v))
 	case uint:
 		variant.Type = Uint
 		if intSize == 32 {
-			variant.Data = append(variant.Data, make([]byte, 4)...)
+			variant.Data = make([]byte, 4)
 			binary.BigEndian.PutUint32(variant.Data, uint32(v))
 		} else if intSize == 64 {
-			variant.Data = append(variant.Data, make([]byte, 8)...)
+			variant.Data = make([]byte, 8)
 			binary.BigEndian.PutUint64(variant.Data, uint64(v))
 		}
 	case uint8:
@@ -216,23 +276,23 @@ func New(v any) Variant {
 		variant.Data = append(variant.Data, v)
 	case uint16:
 		variant.Type = Uint16
-		variant.Data = append(variant.Data, make([]byte, 2)...)
+		variant.Data = make([]byte, 2)
 		binary.BigEndian.PutUint16(variant.Data, v)
 	case uint32:
 		variant.Type = Uint32
-		variant.Data = append(variant.Data, make([]byte, 4)...)
+		variant.Data = make([]byte, 4)
 		binary.BigEndian.PutUint32(variant.Data, v)
 	case uint64:
 		variant.Type = Uint64
-		variant.Data = append(variant.Data, make([]byte, 8)...)
+		variant.Data = make([]byte, 8)
 		binary.BigEndian.PutUint64(variant.Data, v)
 	case float32:
 		variant.Type = Float32
-		variant.Data = append(variant.Data, make([]byte, 4)...)
+		variant.Data = make([]byte, 4)
 		binary.BigEndian.PutUint32(variant.Data, math.Float32bits(v))
 	case float64:
 		variant.Type = Float64
-		variant.Data = append(variant.Data, make([]byte, 8)...)
+		variant.Data = make([]byte, 8)
 		binary.BigEndian.PutUint64(variant.Data, math.Float64bits(v))
 	case time.Time:
 		data, err := v.MarshalBinary()
