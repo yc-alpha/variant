@@ -115,7 +115,7 @@ func (v Variant) ToTime() time.Time {
 
 // Equal checks if the Variant is equal to another value.
 func (v Variant) Equal(other any) bool {
-	if v, ok := other.(Variant); ok {
+	if _, ok := other.(Variant); ok {
 		return reflect.DeepEqual(v, other)
 	}
 	variant := New(other)
@@ -239,10 +239,11 @@ func New(v any) Variant {
 		}
 	case int:
 		variant.Type = Int
-		if intSize == 32 {
+		switch intSize {
+		case 32:
 			variant.Data = make([]byte, 4)
 			binary.BigEndian.PutUint32(variant.Data, uint32(v))
-		} else if intSize == 64 {
+		case 64:
 			variant.Data = make([]byte, 8)
 			binary.BigEndian.PutUint64(variant.Data, uint64(v))
 		}
@@ -264,10 +265,11 @@ func New(v any) Variant {
 		binary.BigEndian.PutUint64(variant.Data, uint64(v))
 	case uint:
 		variant.Type = Uint
-		if intSize == 32 {
+		switch intSize {
+		case 32:
 			variant.Data = make([]byte, 4)
 			binary.BigEndian.PutUint32(variant.Data, uint32(v))
-		} else if intSize == 64 {
+		case 64:
 			variant.Data = make([]byte, 8)
 			binary.BigEndian.PutUint64(variant.Data, uint64(v))
 		}
