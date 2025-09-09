@@ -135,7 +135,7 @@ func Test_ToTime(t *testing.T) {
 
 type Data struct {
 	Name   string
-	Age    int
+	Age    uint64
 	Weight float32
 	IsMale any
 }
@@ -144,23 +144,43 @@ type Data2 struct {
 	Name   Variant
 	Age    Variant
 	Weight Variant
-	IsMale Variant
+	IsMale Variant `json:"is_male"`
+	Data   map[string]Variant
 }
 
 func Test_Marshal(t *testing.T) {
 	data := map[string]interface{}{
-		"Name":    New("John"),
-		"Age":     New(42),
-		"Weight":  New(1.2),
-		"IsMale":  New(true),
-		"Now":     New(time.Now()),
-		"Address": New(nil),
+		"Name":   New("John"),
+		"Age":    New(1<<53 + 1),
+		"Weight": New(1.2),
+		"IsMale": New(true),
+		"Now":    New(time.Now()),
+		"data": map[string]any{
+			"key1": New("value1"),
+			"key2": New(10086),
+		},
 	}
 	bytes, err := json.Marshal(&data)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(string(bytes))
+}
+
+func Test_Unmarshal(t *testing.T) {
+	data := []byte(`{"name": "li\nli", "age": 36, "weight": 60.123, "is_male": false` +
+		`, "now": "2024-06-20T14:00:00Z", "data": {"key1": "value1", "key2": []}}`)
+
+	d := Data2{}
+	err := json.Unmarshal(data, &d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(d.Name.ToString())
+	fmt.Println(d.Age.ToInt())
+	fmt.Println(d.Weight.ToInt())
+	fmt.Println(d.IsMale.ToBool())
+	fmt.Println(d.Data)
 }
 
 // BenchmarkVariant-10    	  110092	     10829 ns/op	     456 B/op	       8 allocs/op
@@ -173,7 +193,7 @@ func Benchmark_UnmarshalJson(b *testing.B) {
 			panic(err)
 		}
 		fmt.Println(d.Name.ToString())
-		fmt.Println(d.Age.ToString())
+		fmt.Println(d.Age.ToInt())
 		fmt.Println(d.Weight.ToString())
 		fmt.Println(d.IsMale.ToBool())
 	}
@@ -190,7 +210,7 @@ func Benchmark_UnmarshalJson2(b *testing.B) {
 			panic(err)
 		}
 		fmt.Println(d.Name)
-		fmt.Println(strconv.Itoa(d.Age))
+		fmt.Println(strconv.Itoa(int(d.Age)))
 		fmt.Println(strconv.FormatFloat(float64(d.Weight), 'f', -1, 64))
 		if d.IsMale != nil {
 			fmt.Println(true)
@@ -214,3 +234,30 @@ func Test_Equal(t *testing.T) {
 	assert(!v1.Equal(Nil))
 	assert(!v1.Equal(New(1234)))
 }
+
+type Data3 struct {
+	Name   string
+	Age    Variant
+	Weight float32
+	IsMale any
+}
+
+// func Test_YmlMarshal(t *testing.T) {
+// 	data := map[string]interface{}{
+// 		"Name":    New("John"),
+// 		"Age":     New(uint64(42)),
+// 		"Weight":  New(1.2),
+// 		"IsMale":  New(true),
+// 		"Now":     New(time.Now()),
+// 		"Address": New(nil),
+// 		"data": map[string]any{
+// 			"key1": New("value1"),
+// 			"key2": New(10086),
+// 		},
+// 	}
+// 	bytes, err := yaml.Marshal(&data)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	fmt.Println(string(bytes))
+// }

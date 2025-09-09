@@ -2,7 +2,6 @@ package variant
 
 import (
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"math"
 	"reflect"
@@ -121,43 +120,6 @@ func (v Variant) Equal(other any) bool {
 	variant := New(other)
 	variant.layout = v.layout
 	return reflect.DeepEqual(v, variant)
-}
-
-// UnmarshalJSON implements the json.Unmarshaler interface.
-func (v *Variant) UnmarshalJSON(data []byte) error {
-	v.Type = String
-	if data[0] == '"' && data[len(data)-1] == '"' {
-		v.Data = data[1 : len(data)-1]
-	} else if data[0] == 't' {
-		v.Type = Bool
-		v.Data = append(v.Data, 0x01)
-	} else if data[0] == 'f' {
-		v.Type = Bool
-		v.Data = append(v.Data, 0x00)
-	} else if data[0] == 'n' {
-		v.Type = Invalid
-	} else {
-		v.Data = data
-	}
-	return nil
-}
-
-// MarshalJSON implements the json.Marshaler interface.
-func (v Variant) MarshalJSON() ([]byte, error) {
-	switch v.Type {
-	case String, Time:
-		return json.Marshal(v.ToString())
-	case Bool:
-		return json.Marshal(v.ToBool())
-	case Int, Int8, Int16, Int32, Int64:
-		return json.Marshal(v.ToInt())
-	case Uint, Uint8, Uint16, Uint32, Uint64:
-		return json.Marshal(v.ToUint())
-	case Float32, Float64:
-		return json.Marshal(v.ToFloat64())
-	default:
-		return json.Marshal(v.Data)
-	}
 }
 
 func New(v any) Variant {
