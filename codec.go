@@ -13,13 +13,13 @@ type JSONUnmarshaler interface {
 	UnmarshalJSON([]byte) error
 }
 
-// type YAMLMarshaler interface {
-// 	MarshalYAML() (any, error)
-// }
+type YAMLMarshaler interface {
+	MarshalYAML() (any, error)
+}
 
-// type YAMLUnmarshaler interface {
-// 	UnmarshalYAML(node any) error
-// }
+type YAMLUnmarshaler interface {
+	UnmarshalYAML(unmarshal func(any) error) error
+}
 
 // MarshalJSON implements the JSONMarshaler interface.
 func (v Variant) MarshalJSON() ([]byte, error) {
@@ -65,21 +65,32 @@ func (v *Variant) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// func (v Variant) MarshalYAML() (any, error) {
-// 	switch v.Type {
-// 	case String, Time:
-// 		return v.ToString(), nil
-// 	case Bool:
-// 		return v.ToBool(), nil
-// 	case Int, Int8, Int16, Int32, Int64:
-// 		return v.ToInt64(), nil
-// 	case Uint, Uint8, Uint16, Uint32, Uint64:
-// 		return v.ToUint64(), nil
-// 	case Float32, Float64:
-// 		return v.ToFloat64(), nil
-// 	case Invalid:
-// 		return nil, nil
-// 	default:
-// 		return v.Data, nil
-// 	}
-// }
+// MarshalYAML implements the YAMLMarshaler interface.
+func (v Variant) MarshalYAML() (any, error) {
+	switch v.Type {
+	case String, Time:
+		return v.ToString(), nil
+	case Bool:
+		return v.ToBool(), nil
+	case Int, Int8, Int16, Int32, Int64:
+		return v.ToInt64(), nil
+	case Uint, Uint8, Uint16, Uint32, Uint64:
+		return v.ToUint64(), nil
+	case Float32, Float64:
+		return v.ToFloat64(), nil
+	case Invalid:
+		return nil, nil
+	default:
+		return v.Data, nil
+	}
+}
+
+// UnmarshalYAML implements the YAMLUnmarshaler interface.
+func (v *Variant) UnmarshalYAML(unmarshal func(any) error) error {
+	var data any
+	if err := unmarshal(&data); err != nil {
+		return err
+	}
+	*v = New(data)
+	return nil
+}

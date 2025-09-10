@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"testing"
 	"time"
+	// "gopkg.in/yaml.v3"
 )
 
 type Pair[T any] struct {
@@ -242,22 +243,112 @@ type Data3 struct {
 	IsMale any
 }
 
-// func Test_YmlMarshal(t *testing.T) {
-// 	data := map[string]interface{}{
-// 		"Name":    New("John"),
-// 		"Age":     New(uint64(42)),
-// 		"Weight":  New(1.2),
-// 		"IsMale":  New(true),
-// 		"Now":     New(time.Now()),
-// 		"Address": New(nil),
-// 		"data": map[string]any{
-// 			"key1": New("value1"),
-// 			"key2": New(10086),
-// 		},
-// 	}
-// 	bytes, err := yaml.Marshal(&data)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(string(bytes))
-// }
+/*
+func Test_YmlMarshal(t *testing.T) {
+	data := map[string]interface{}{
+		"Name":    New("John\nDoe"),
+		"Age":     New(uint64(42)),
+		"Weight":  New(1.2),
+		"IsMale":  New(true),
+		"Now":     New(time.Now()),
+		"Address": New(nil),
+		"data1": map[string]any{
+			"key1": New("value1"),
+			"key2": New(10086),
+		},
+		"data2": []Variant{
+			New("item1"),
+			New(10086),
+		},
+	}
+	bytes, err := yaml.Marshal(&data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(bytes))
+}
+*/
+
+type UserProfile struct {
+	Name     Variant `yaml:"name"`
+	Age      Variant `yaml:"age"`
+	Active   Variant `yaml:"active"`
+	Nickname Variant `yaml:"nickname"`
+	Scores   struct {
+		Math    Variant `yaml:"math"`
+		English Variant `yaml:"english"`
+	} `yaml:"scores"`
+	Settings struct {
+		Theme         Variant `yaml:"theme"`
+		Notifications Variant `yaml:"notifications"`
+		Languages     []Variant
+	} `yaml:"settings"`
+	Items []struct {
+		ID    Variant `yaml:"id"`
+		Name  Variant `yaml:"name"`
+		Price Variant `yaml:"price"`
+	} `yaml:"items"`
+	Metadata Variant `yaml:"metadata"`
+}
+
+/*
+func TestVariant_UnmarshalYAML(t *testing.T) {
+	yamlData := `
+name: "Alice"
+age: 30
+active: true
+nickname: null
+scores:
+  math: 95.5
+  english: 88
+settings:
+  theme: "dark"
+  notifications: false
+  languages:
+    - "en"
+    - "fr"
+items:
+  - id: 1
+    name: "Item1"
+    price: 12.5
+  - id: 2
+    name: "Item2"
+    price: 20.0
+metadata: null
+`
+	var profile UserProfile
+	if err := yaml.Unmarshal([]byte(yamlData), &profile); err != nil {
+		t.Fatalf("failed to unmarshal YAML: %v", err)
+	}
+	if got := profile.Name.ToString(); got != "Alice" {
+		t.Errorf("expected Name=Alice, got %q", got)
+	}
+	if got := profile.Age.ToInt64(); got != 30 {
+		t.Errorf("expected Age=30, got %d", got)
+	}
+	if got := profile.Active.ToBool(); !got {
+		t.Errorf("expected Active=true, got %v", got)
+	}
+	if profile.Nickname.Type != Invalid {
+		t.Errorf("expected Nickname=Invalid, got %+v", profile.Nickname)
+	}
+	if got := profile.Scores.Math.ToFloat64(); math.Abs(got-95.5) != 0 {
+		t.Errorf("expected Scores.Math=95.5, got %f", got)
+	}
+	if got := profile.Scores.English.ToInt(); got != 88 {
+		t.Errorf("expected Scores.English=88, got %d", got)
+	}
+	if got := profile.Settings.Theme.ToString(); got != "dark" {
+		t.Errorf("expected Settings.Theme=dark, got %q", got)
+	}
+	if got := profile.Settings.Notifications.ToBool(); got {
+		t.Errorf("expected Settings.Notifications=false, got %v", got)
+	}
+	if !reflect.DeepEqual(profile.Settings.Languages, []Variant{New("en"), New("fr")}) {
+		t.Errorf("expected Settings.Languages=[en fr], got %+v", profile.Settings.Languages)
+	}
+	if profile.Metadata.Type != Invalid {
+		t.Errorf("expected Metadata=Invalid, got %+v", profile.Metadata)
+	}
+}
+*/
