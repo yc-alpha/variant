@@ -3,6 +3,7 @@ package variant
 import (
 	"encoding/binary"
 	"math"
+	"strconv"
 	"time"
 	"unsafe"
 )
@@ -83,6 +84,9 @@ func (t *timeConverter) FromString(v Variant) time.Time {
 	s := *(*string)(unsafe.Pointer(&v.Data))
 	tt, err := time.Parse(v.layout, s)
 	if err != nil {
+		if i, e := strconv.Atoi(s); e == nil {
+			return time.Unix(0, int64(i))
+		}
 	}
 	return tt
 }

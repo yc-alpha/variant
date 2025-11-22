@@ -9,6 +9,7 @@ func Test_ToTime2(t *testing.T) {
 	targets := []Pair[time.Time]{
 		{false, time.Time{}},
 		{"100.86", time.Time{}},
+		{"1697788800000000000", time.Unix(0, 1697788800000000000)},
 		{int8(0), time.Unix(0, 0)},
 		{int16(0), time.Unix(0, 0)},
 		{int32(10086), time.Unix(0, 10086)},
